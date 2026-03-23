@@ -500,8 +500,8 @@ bool NodeDB::factoryReset(bool eraseBleBonds)
 {
     LOG_INFO("Perform factory reset!");
     // first, remove the "/prefs" (this removes most prefs)
-    spiLock->lock();
-    rmDir("/prefs"); // this uses spilock internally...
+    //spiLock->lock();
+    //rmDir("/prefs"); // this uses spilock internally...
 
 #ifdef FSCom
     if (FSCom.exists("/static/rangetest.csv") && !FSCom.remove("/static/rangetest.csv")) {
@@ -510,8 +510,14 @@ bool NodeDB::factoryReset(bool eraseBleBonds)
 #endif
     spiLock->unlock();
     // second, install default state (this will deal with the duplicate mac address issue)
-    installDefaultNodeDatabase();
     installDefaultDeviceState();
+    
+    // remove the "/prefs" (this removes most prefs)
+    spiLock->lock();
+    rmDir("/prefs"); // this uses spilock internally...
+    spiLock->unlock();
+    
+    installDefaultNodeDatabase();
     installDefaultConfig(!eraseBleBonds); // Also preserve the private key if we're not erasing BLE bonds
     installDefaultModuleConfig();
     installDefaultChannels();
