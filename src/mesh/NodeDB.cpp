@@ -1109,7 +1109,7 @@ void NodeDB::installDefaultDeviceState()
     snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", getNodeNum() & 0x0ffff);
 #endif
 
-    // ##
+    // ##    ## //
     // Logic to override NodeNum based on a temporary MAC if long_name starts with '='
     if (owner.long_name[0] == '=') {
         const char *macStr = &owner.long_name[1];
@@ -1134,7 +1134,7 @@ void NodeDB::installDefaultDeviceState()
         
             // Update the owner ID to match
             //owner.id = nodeNum;
-            snprintf(owner.id, sizeof(owner.id), "!%08x", NodeNum);
+            snprintf(owner.id, sizeof(owner.id), "!%08x", nodeNum);
             LOG_INFO("New NodeID: !%08x, NodeNum: %u", nodeNum, nodeNum);
             snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", getNodeNum() & 0x0ffff);
         }
