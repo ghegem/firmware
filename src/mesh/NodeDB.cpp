@@ -1108,11 +1108,12 @@ void NodeDB::installDefaultDeviceState()
     generatePacketId(); // FIXME - ugly way to init current_packet_id;
 
     // Set default owner name
-    pickNewNodeNum(); // based on macaddr now
+    //pickNewNodeNum(); // based on macaddr now
 #ifdef USERPREFS_CONFIG_OWNER_LONG_NAME
     snprintf(owner.long_name, sizeof(owner.long_name), (const char *)USERPREFS_CONFIG_OWNER_LONG_NAME);
 #else
-    snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", getNodeNum() & 0x0ffff);
+    //pickNewNodeNum(); // based on macaddr now
+    //snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", getNodeNum() & 0x0ffff);
 #endif
 
     // ##    ## //
@@ -1144,6 +1145,9 @@ void NodeDB::installDefaultDeviceState()
             LOG_INFO("New NodeID: !%08x, NodeNum: %u", nodeNum, nodeNum);
             snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", getNodeNum() & 0x0ffff);
         }
+    } else {
+        pickNewNodeNum(); // based on macaddr now
+        snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", getNodeNum() & 0x0ffff);    
     }
 
     
