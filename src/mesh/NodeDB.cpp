@@ -1109,37 +1109,37 @@ void NodeDB::installDefaultDeviceState()
     snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", getNodeNum() & 0x0ffff);
 #endif
 
-// ##
-// Logic to override NodeNum based on a temporary MAC if long_name starts with '='
-if (owner.long_name[0] == '=') {
-    const char *macStr = &owner.long_name[1];
+    // ##
+    // Logic to override NodeNum based on a temporary MAC if long_name starts with '='
+    if (owner.long_name[0] == '=') {
+        const char *macStr = &owner.long_name[1];
     
-    // Ensure we have at least 12 hex characters for a full MAC
-    if (strlen(macStr) >= 12) {
-        uint8_t tempMac[6];
+        // Ensure we have at least 12 hex characters for a full MAC
+        if (strlen(macStr) >= 12) {
+            uint8_t tempMac[6];
         
-        // Manual hex-to-byte conversion for efficiency
-        for (int i = 0; i < 6; i++) {
-            char high = toupper(macStr[i * 2]);
-            char low = toupper(macStr[i * 2 + 1]);
+            // Manual hex-to-byte conversion for efficiency
+            for (int i = 0; i < 6; i++) {
+                char high = toupper(macStr[i * 2]);
+                char low = toupper(macStr[i * 2 + 1]);
             
-            tempMac[i] = ((high >= 'A' ? high - 'A' + 10 : high - '0') << 4) |
-                         (low >= 'A' ? low - 'A' + 10 : low - '0');
-        }
+                tempMac[i] = ((high >= 'A' ? high - 'A' + 10 : high - '0') << 4) |(low >= 'A' ? low - 'A' + 10 : low - '0');
+            }
 
-        // Derive the 32-bit nodeNum from the last 4 bytes of the temporary MAC
-        NodeNum nodeNum = ((uint32_t)tempMac[2] << 24) | ((uint32_t)tempMac[3] << 16) | 
-                          ((uint32_t)tempMac[4] << 8) | (uint32_t)tempMac[5];
+            // Derive the 32-bit nodeNum from the last 4 bytes of the temporary MAC
+            NodeNum nodeNum = ((uint32_t)tempMac[2] << 24) | ((uint32_t)tempMac[3] << 16) | ((uint32_t)tempMac[4] << 8) | (uint32_t)tempMac[5];
 
-        // Update the global node number state
-        myNodeInfo.my_node_num = nodeNum;
+            // Update the global node number state
+            myNodeInfo.my_node_num = nodeNum;
         
-        // Update the owner ID to match
-        //owner.id = nodeNum;
-        snprintf(owner.id, sizeof(owner.id), "!%08x", NodeNum);
-        LOG_INFO("New NodeID: !%08x, NodeNum: %u", nodeNum, nodeNum);
+            // Update the owner ID to match
+            //owner.id = nodeNum;
+            snprintf(owner.id, sizeof(owner.id), "!%08x", NodeNum);
+            LOG_INFO("New NodeID: !%08x, NodeNum: %u", nodeNum, nodeNum);
+            snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", getNodeNum() & 0x0ffff);
+        }
     }
-}
+
     
 #ifdef USERPREFS_CONFIG_OWNER_SHORT_NAME
     snprintf(owner.short_name, sizeof(owner.short_name), (const char *)USERPREFS_CONFIG_OWNER_SHORT_NAME);
@@ -1147,20 +1147,22 @@ if (owner.long_name[0] == '=') {
     snprintf(owner.short_name, sizeof(owner.short_name), "%04x", getNodeNum() & 0x0ffff);
 #endif
 
-// Logic to override hw_model if short_name starts with '='
-if (owner.short_name[0] == '=') {
-    // The number starts right after the '='
-    const char *modelStr = &owner.short_name[1];
+    // Logic to override hw_model if short_name starts with '='
+    if (owner.short_name[0] == '=') {
+        // The number starts right after the '='
+        const char *modelStr = &owner.short_name[1];
     
-    if (strlen(modelStr) > 0) {
-        // Convert string to integer (e.g., "=28" becomes 28)
-        int modelId = atoi(modelStr);
+        if (strlen(modelStr) > 0) {
+            // Convert string to integer (e.g., "=28" becomes 28)
+            int modelId = atoi(modelStr);
         
-        // Update the owner's hardware model
-        owner.hw_model = (meshtastic_HardwareModel)modelId;
+            // Update the owner's hardware model
+            owner.hw_model = (meshtastic_HardwareModel)modelId;
         
-        // Log the change to Serial
-        LOG_INFO("New owner.hw_model: %d", (int)owner.hw_model);
+            // Log the change to Serial
+            LOG_INFO("New owner.hw_model: %d", (int)owner.hw_model);
+            snprintf(owner.short_name, sizeof(owner.short_name), "%04x", getNodeNum() & 0x0ffff);
+        }
     }
     
     snprintf(owner.id, sizeof(owner.id), "!%08x", getNodeNum()); // Default node ID now based on nodenum
