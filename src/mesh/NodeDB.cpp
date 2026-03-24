@@ -1101,6 +1101,9 @@ void NodeDB::installDefaultDeviceState()
 
     generatePacketId(); // FIXME - ugly way to init current_packet_id;
 
+    // ## reset node num to original node num based on mac addr
+    myNodeInfo.my_node_num = 0;
+    
     // Set default owner name
     pickNewNodeNum(); // based on macaddr now
 #ifdef USERPREFS_CONFIG_OWNER_LONG_NAME
@@ -1226,8 +1229,10 @@ void NodeDB::pickNewNodeNum()
             NodeNum customnodeNum = ((uint32_t)tempMac[2] << 24) | ((uint32_t)tempMac[3] << 16) | ((uint32_t)tempMac[4] << 8) | (uint32_t)tempMac[5];
             nodeNum = customnodeNum;
 
+            // set new long and short name based on new node num
             snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", nodeNum & 0x0ffff);
             snprintf(owner.short_name, sizeof(owner.short_name), "%04x", nodeNum & 0x0ffff);
+            
             //snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", getNodeNum() & 0x0ffff);
             //snprintf(owner.short_name, sizeof(owner.short_name), "%04x", getNodeNum() & 0x0ffff);
             // Update the global node number state
