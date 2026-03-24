@@ -1118,7 +1118,9 @@ void NodeDB::installDefaultDeviceState()
 
     // ##    ## //
     // Logic to override NodeNum based on a temporary MAC if long_name starts with '='
+    LOG_INFO("* * checking for custom node id/num");
     if (owner.long_name[0] == '=') {
+        LOG_INFO("* * custom node id/num detected");
         const char *macStr = &owner.long_name[1];
     
         // Ensure we have at least 12 hex characters for a full MAC
@@ -1142,7 +1144,7 @@ void NodeDB::installDefaultDeviceState()
             // Update the owner ID to match
             //owner.id = nodeNum;
             snprintf(owner.id, sizeof(owner.id), "!%08x", nodeNum);
-            LOG_INFO("New NodeID: !%08x, NodeNum: %u", nodeNum, nodeNum);
+            LOG_INFO("* * New NodeID: !%08x, NodeNum: %u", nodeNum, nodeNum);
             snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", getNodeNum() & 0x0ffff);
         }
     } else {
@@ -1170,7 +1172,7 @@ void NodeDB::installDefaultDeviceState()
             owner.hw_model = (meshtastic_HardwareModel)modelId;
         
             // Log the change to Serial
-            LOG_INFO("New owner.hw_model: %d", (int)owner.hw_model);
+            LOG_INFO("* * New owner.hw_model: %d", (int)owner.hw_model);
             snprintf(owner.short_name, sizeof(owner.short_name), "%04x", getNodeNum() & 0x0ffff);
         }
     }
