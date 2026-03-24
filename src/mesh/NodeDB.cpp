@@ -1102,11 +1102,11 @@ void NodeDB::installDefaultDeviceState()
     generatePacketId(); // FIXME - ugly way to init current_packet_id;
 
     // Set default owner name
-    //pickNewNodeNum(); // based on macaddr now
+    pickNewNodeNum(); // based on macaddr now
 #ifdef USERPREFS_CONFIG_OWNER_LONG_NAME
     snprintf(owner.long_name, sizeof(owner.long_name), (const char *)USERPREFS_CONFIG_OWNER_LONG_NAME);
 #else
-    pickNewNodeNum(); // based on macaddr now
+    //pickNewNodeNum(); // based on macaddr now
     snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", getNodeNum() & 0x0ffff);
 #endif
 
@@ -1205,8 +1205,8 @@ void NodeDB::pickNewNodeNum()
 
     // ##    ## //
     // Logic to override NodeNum based on a temporary MAC if long_name starts with '='
-    #LOG_WARN("* * checking for custom node id/num");
-    #if (owner.long_name[0] == '=') {
+    LOG_WARN("* * checking for custom node id/num");
+    if (owner.long_name[0] == '=') {
         LOG_WARN("* * custom node id/num detected");
         const char *macStr = &owner.long_name[1];
     
