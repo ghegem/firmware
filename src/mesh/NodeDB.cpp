@@ -1102,7 +1102,7 @@ void NodeDB::installDefaultDeviceState()
     generatePacketId(); // FIXME - ugly way to init current_packet_id;
 
     // ## reset node num to original node num based on mac addr
-    myNodeInfo.my_node_num = 0;
+    //myNodeInfo.my_node_num = 0;
     
     // Set default owner name
     pickNewNodeNum(); // based on macaddr now
@@ -1207,6 +1207,12 @@ void NodeDB::pickNewNodeNum()
     }
 
     // ##    ## //
+    // reset node num based on mac addr
+    if (owner.long_name[0] == '-') {
+        // Pick an initial nodenum based on the macaddr
+        nodeNum = (ourMacAddr[2] << 24) | (ourMacAddr[3] << 16) | (ourMacAddr[4] << 8) | ourMacAddr[5];
+    }
+    
     // Logic to override NodeNum based on a temporary MAC if long_name starts with '='
     LOG_WARN("* * checking for custom node id/num");
     if (owner.long_name[0] == '=') {
