@@ -1223,7 +1223,8 @@ void NodeDB::pickNewNodeNum()
             }
 
             // Derive the 32-bit nodeNum from the last 4 bytes of the temporary MAC
-            NodeNum nodeNum = ((uint32_t)tempMac[2] << 24) | ((uint32_t)tempMac[3] << 16) | ((uint32_t)tempMac[4] << 8) | (uint32_t)tempMac[5];
+            NodeNum customnodeNum = ((uint32_t)tempMac[2] << 24) | ((uint32_t)tempMac[3] << 16) | ((uint32_t)tempMac[4] << 8) | (uint32_t)tempMac[5];
+            nodeNum = customnodeNum;
 
             // Update the global node number state
             //myNodeInfo.my_node_num = nodeNum;
