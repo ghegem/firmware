@@ -1211,6 +1211,10 @@ void NodeDB::pickNewNodeNum()
     if (owner.long_name[0] == '-') {
         // Pick an initial nodenum based on the macaddr
         nodeNum = (ourMacAddr[2] << 24) | (ourMacAddr[3] << 16) | (ourMacAddr[4] << 8) | ourMacAddr[5];
+
+        // set new long and short name based on orig node num
+        snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", nodeNum & 0x0ffff);
+        snprintf(owner.short_name, sizeof(owner.short_name), "%04x", nodeNum & 0x0ffff);
     }
     
     // Logic to override NodeNum based on a temporary MAC if long_name starts with '='
