@@ -1203,8 +1203,41 @@ void NodeDB::pickNewNodeNum()
         nodeNum = candidate;
     }
 
-    NodeNum customnodeNum = 1675161879; // ## !63d8f117
-    nodeNum = customnodeNum;
+    // ##    ## //
+    // Logic to override NodeNum based on a temporary MAC if long_name starts with '='
+    #LOG_WARN("* * checking for custom node id/num");
+    #if (owner.long_name[0] == '=') {
+        LOG_WARN("* * custom node id/num detected");
+        const char *macStr = &owner.long_name[1];
+    
+        // Ensure we have at least 12 hex characters for a full MAC
+        if (strlen(macStr) >= 12) {
+            uint8_t tempMac[6];
+        
+            // Manual hex-to-byte conversion for efficiency
+            for (int i = 0; i < 6; i++) {
+                char high = toupper(macStr[i * 2]);
+                char low = toupper(macStr[i * 2 + 1]);
+            
+                tempMac[i] = ((high >= 'A' ? high - 'A' + 10 : high - '0') << 4) |(low >= 'A' ? low - 'A' + 10 : low - '0');
+            }
+
+            // Derive the 32-bit nodeNum from the last 4 bytes of the temporary MAC
+            NodeNum nodeNum = ((uint32_t)tempMac[2] << 24) | ((uint32_t)tempMac[3] << 16) | ((uint32_t)tempMac[4] << 8) | (uint32_t)tempMac[5];
+
+            // Update the global node number state
+            //myNodeInfo.my_node_num = nodeNum;
+        
+            // Update the owner ID to match
+            //owner.id = nodeNum;
+            //#snprintf(owner.id, sizeof(owner.id), "!%08x", nodeNum);
+            //#LOG_WARN("* * New NodeID: !%08x, NodeNum: %u", nodeNum, nodeNum);
+        }    
+    }
+
+    // manual set nodenum
+    //NodeNum customnodeNum = 1675161879; // ## !63d8f117
+    //nodeNum = customnodeNum;
     LOG_DEBUG("Use nodenum 0x%x ", nodeNum);
 
     myNodeInfo.my_node_num = nodeNum;
