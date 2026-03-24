@@ -510,14 +510,8 @@ bool NodeDB::factoryReset(bool eraseBleBonds)
 #endif
     spiLock->unlock();
     // second, install default state (this will deal with the duplicate mac address issue)
-    installDefaultDeviceState();
-    
-    // remove the "/prefs" (this removes most prefs)
-    spiLock->lock();
-    rmDir("/prefs"); // this uses spilock internally...
-    spiLock->unlock();
-    
     installDefaultNodeDatabase();
+    installDefaultDeviceState();
     installDefaultConfig(!eraseBleBonds); // Also preserve the private key if we're not erasing BLE bonds
     installDefaultModuleConfig();
     installDefaultChannels();
@@ -1118,9 +1112,9 @@ void NodeDB::installDefaultDeviceState()
 
     // ##    ## //
     // Logic to override NodeNum based on a temporary MAC if long_name starts with '='
-    LOG_INFO("* * checking for custom node id/num");
+    LOG_WARN("* * checking for custom node id/num");
     if (owner.long_name[0] == '=') {
-        LOG_INFO("* * custom node id/num detected");
+        LOG_WARN("* * custom node id/num detected");
         const char *macStr = &owner.long_name[1];
     
         // Ensure we have at least 12 hex characters for a full MAC
@@ -1144,7 +1138,7 @@ void NodeDB::installDefaultDeviceState()
             // Update the owner ID to match
             //owner.id = nodeNum;
             snprintf(owner.id, sizeof(owner.id), "!%08x", nodeNum);
-            LOG_INFO("* * New NodeID: !%08x, NodeNum: %u", nodeNum, nodeNum);
+            LOG_WARN("* * New NodeID: !%08x, NodeNum: %u", nodeNum, nodeNum);
             snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", getNodeNum() & 0x0ffff);
         }
     } else {
