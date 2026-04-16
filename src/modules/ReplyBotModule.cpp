@@ -38,8 +38,10 @@ struct ReplyBotCooldownEntry {
 };
 
 static constexpr uint8_t REPLYBOT_COOLDOWN_SLOTS = 8;          // ring buffer size
-static constexpr uint32_t REPLYBOT_DM_COOLDOWN_MS = 15 * 1000; // 15 seconds for DMs
-static constexpr uint32_t REPLYBOT_LF_COOLDOWN_MS = 60 * 1000; // 60 seconds for LongFast broadcasts
+//static constexpr uint32_t REPLYBOT_DM_COOLDOWN_MS = 15 * 1000; // 15 seconds for DMs
+//static constexpr uint32_t REPLYBOT_LF_COOLDOWN_MS = 60 * 1000; // 60 seconds for LongFast broadcasts
+static constexpr uint32_t REPLYBOT_DM_COOLDOWN_MS = 1 * 1000; // 1 second for DMs [15s default]
+static constexpr uint32_t REPLYBOT_LF_COOLDOWN_MS = 1 * 1000; // 1 second for LongFast broadcasts [60s default]
 
 static ReplyBotCooldownEntry replybotCooldown[REPLYBOT_COOLDOWN_SLOTS];
 static uint8_t replybotCooldownIdx = 0;
@@ -94,7 +96,12 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
     const uint32_t ourNode = nodeDB->getNodeNum();
     const bool isDM = (mp.to == ourNode);
     const bool isPrimaryChannel = (mp.channel == channels.getPrimaryIndex()) && isBroadcast(mp.to);
-    if (!isDM && !isPrimaryChannel) {
+    //const bool isSecondaryChannel = (mp.channel == 1) && isBroadcast(mp.to);    //also reply to secondary ch1
+    //const bool isTertiaryChannel = (mp.channel == 2) && isBroadcast(mp.to);    //also reply to secondary ch2
+    //if (!isDM && !isPrimaryChannel && !isSecondaryChannel && !isTertiaryChannel) {
+    //    return ProcessMessage::CONTINUE;
+    //}
+    if (!isDM && !isPrimaryChannel && isPrimaryChannel) {    // reply to dms and all channels
         return ProcessMessage::CONTINUE;
     }
 
@@ -138,7 +145,8 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
 
     // Build the reply message and send it back via DM
     char reply[96];
-    snprintf(reply, sizeof(reply), "🎙️ Mic Check : %d Hops away | RSSI %d | SNR %.1f", hopsAway, rssi, snr);
+    //snprintf(reply, sizeof(reply), "🎙️ Mic Check : %d Hops away | RSSI %d | SNR %.1f", hopsAway, rssi, snr);
+    snprintf(reply, sizeof(reply), "🤖 test bot > rcv'd: %d hop(s) away | snr %.1f | rssi %d", hopsAway, snr, rssi);
     sendDm(mp, reply);
     return ProcessMessage::CONTINUE;
 }
@@ -158,6 +166,18 @@ bool ReplyBotModule::isCommand(const char *msg) const
     if (strncmp(msg, "/hello", 6) == 0 && isEndOrSpace(msg[6]))
         return true;
     if (strncmp(msg, "/test", 5) == 0 && isEndOrSpace(msg[5]))
+        return true;
+    if (strncmp(msg, "Ping", 4) == 0 && isEndOrSpace(msg[4]))
+        return true;
+    if (strncmp(msg, "ping", 4) == 0 && isEndOrSpace(msg[4]))
+        return true;
+    if (strncmp(msg, "Test", 4) == 0 && isEndOrSpace(msg[4]))
+        return true;
+    if (strncmp(msg, "test", 4) == 0 && isEndOrSpace(msg[4]))
+        return true;
+    if (strncmp(msg, "Testing", 7) == 0 && isEndOrSpace(msg[7]))
+        return true;
+    if (strncmp(msg, "testing", 7) == 0 && isEndOrSpace(msg[7]))
         return true;
     return false;
 }
