@@ -96,15 +96,14 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
     const uint32_t ourNode = nodeDB->getNodeNum();
     const bool isDM = (mp.to == ourNode);
     const bool isPrimaryChannel = (mp.channel == channels.getPrimaryIndex()) && isBroadcast(mp.to);
-    //const bool isSecondaryChannel = (mp.channel == 1) && isBroadcast(mp.to);    //also reply to secondary ch1
-    //const bool isTertiaryChannel = (mp.channel == 2) && isBroadcast(mp.to);    //also reply to secondary ch2
-    //if (!isDM && !isPrimaryChannel && !isSecondaryChannel && !isTertiaryChannel) {
-    //    return ProcessMessage::CONTINUE;
-    //}
-    if (!isDM && !isPrimaryChannel && isPrimaryChannel) {    // reply to dms and all channels
-        return ProcessMessage::CONTINUE;
-    }
+    const bool isSecondaryChannel = (mp.channel == 1) && isBroadcast(mp.to);    //also reply to secondary ch1
+    const bool isTertiaryChannel = (mp.channel == 2) && isBroadcast(mp.to);    //also reply to secondary ch2
 
+    // replybot will reply to dms and in secondary channel 1 and 2
+    if (!isDM && !isPrimaryChannel && !isSecondaryChannel && !isTertiaryChannel) {
+    //    return ProcessMessage::CONTINUE;    // if this line is commented out replybot will reply to dms and in all channels
+    }
+    
     // Ignore empty payloads
     if (mp.decoded.payload.size == 0) {
         return ProcessMessage::CONTINUE;
