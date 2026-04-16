@@ -48,6 +48,10 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 // so NRF52_BLE_TX_POWER can be set to -20, -16, -12, -8, -4, 0 (default), 4, and 8.
 #define NRF52_BLE_TX_POWER 0
 
+// ##    ## // redefine the discharge curve for lifepo4 (0% at 2.8v)
+#undef OCV_ARRAY
+#define OCV_ARRAY 3350, 3300, 3280, 3260, 3240, 3220, 3200, 3150, 3100, 3000, 2800
+
 // Number of pins defined in PinDescription array
 #define PINS_COUNT (48)
 #define NUM_DIGITAL_PINS (48)
